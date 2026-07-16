@@ -4448,6 +4448,7 @@ function registerJsonRoutes(app) {
         `
         )
         .eq("monto", monto)
+        .eq("estado", "validado")
         .or(
           `numero_operacion_banco.ilike.%${normalizedInputOp},numero_operacion.ilike.%${normalizedInputOp}`
         );
