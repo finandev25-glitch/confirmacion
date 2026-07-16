@@ -4398,11 +4398,34 @@ function registerJsonRoutes(app) {
       const client = getSupabaseAdminClient();
       const { monto, moneda, numero_operacion_banco, excludeId } = req.body || {};
 
+      const normalizeCurrencyForDuplicateCheck = (value) => {
+        const raw = String(value || "").trim().toUpperCase();
+        if (!raw) return "";
+        if (raw === "PEN" || raw === "S/" || raw === "S" || raw.includes("SOL")) return "PEN";
+        if (raw === "USD" || raw === "$" || raw.includes("DOLAR") || raw.includes("DÓLAR")) return "USD";
+        return "";
+      };
+
+      const normalizeOperacionForDuplicateCheck = (value) =>
+        String(value || "")
+          .trim()
+          .replace(/\D/g, "")
+          .replace(/^0+/, "");
+
       if (!monto || !moneda || !numero_operacion_banco) {
         return res.status(400).json({
           checked: true,
           isDuplicate: true,
           message: "El importe, moneda y número de operación bancaria son necesarios para la comprobación.",
+        });
+      }
+
+      const normalizedInputOp = normalizeOperacionForDuplicateCheck(numero_operacion_banco);
+      if (!normalizedInputOp) {
+        return res.status(400).json({
+          checked: true,
+          isDuplicate: true,
+          message: "El número de operación bancaria no es válido para la comprobación.",
         });
       }
 
@@ -4417,6 +4440,7 @@ function registerJsonRoutes(app) {
           fecha_deposito,
           fecha_registro,
           estado,
+          numero_operacion,
           sucursal:sucursal_id(nombre),
           trabajador:trabajador_sucursal_id(nombre),
           empresa:empresa_id(nombre),
@@ -4424,8 +4448,14 @@ function registerJsonRoutes(app) {
         `
         )
         .eq("monto", monto)
-        .eq("moneda", moneda)
-        .eq("estado", "validado");
+        .or(
+          `numero_operacion_banco.ilike.%${normalizedInputOp},numero_operacion.ilike.%${normalizedInputOp}`
+        );
+
+      const normalizedMoneda = normalizeCurrencyForDuplicateCheck(moneda);
+      if (normalizedMoneda) {
+        duplicateCheckQuery.in("moneda", [normalizedMoneda, normalizedMoneda === "PEN" ? "SOLES (PEN)" : "DÓLARES (USD)"]);
+      }
 
       const normalizedExcludeId =
         typeof excludeId === "string" && excludeId.trim() ? excludeId.trim() : null;
@@ -4442,11 +4472,12 @@ function registerJsonRoutes(app) {
 
       if (error) throw error;
 
-      const normalizedInputOp = String(numero_operacion_banco).replace(/^0+/, "");
       const duplicates =
         (data || []).filter((d) => {
-          if (d.numero_operacion_banco) {
-            const normalizedDbOpBanco = String(d.numero_operacion_banco).replace(/^0+/, "");
+          if (d.numero_operacion_banco || d.numero_operacion) {
+            const normalizedDbOpBanco = normalizeOperacionForDuplicateCheck(
+              d.numero_operacion_banco || d.numero_operacion
+            );
             if (normalizedDbOpBanco === normalizedInputOp) return true;
           }
 

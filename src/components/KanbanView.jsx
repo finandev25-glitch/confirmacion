@@ -808,7 +808,7 @@ const KanbanView = ({
                   type="button"
                   onClick={() => handleValidatorFilterToggle(user)}
                   aria-pressed={selectedValidatorFilter?.key === user.key}
-                  className={`flex min-w-0 flex-col items-center rounded-xl border px-2 py-1 shadow-sm backdrop-blur transition-all ${
+                  className={`flex min-w-0 items-center gap-1.5 rounded-full border px-2 py-1 shadow-sm backdrop-blur transition-all ${
                     selectedValidatorFilter?.key === user.key
                       ? "alarm-flash border-red-600 bg-red-100 text-slate-900 shadow-lg shadow-red-500/30 dark:border-red-500 dark:bg-red-200 dark:text-slate-900"
                       : "border-slate-200 bg-white/90 hover:border-red-300 hover:bg-red-50 dark:border-slate-700 dark:bg-gray-900/90 dark:hover:border-red-700 dark:hover:bg-red-950/20"
@@ -816,15 +816,15 @@ const KanbanView = ({
                   title={`${user.name}: ${user.count} depósito${user.count === 1 ? "" : "s"} atendido${user.count === 1 ? "" : "s"}`}
                 >
                   <div
-                    className={`flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br ${
+                    className={`flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-br ${
                       selectedValidatorFilter?.key === user.key
                         ? "from-red-200 to-red-100 text-slate-900"
                         : "from-slate-800 to-slate-600 text-white dark:from-slate-100 dark:to-slate-300 dark:text-slate-900"
-                    } text-[11px] font-bold`}
+                    } text-[10px] font-bold`}
                   >
                     {user.count}
                   </div>
-                  <span className="mt-1 max-w-20 truncate text-[10px] font-medium leading-tight text-gray-600 dark:text-gray-300">
+                  <span className="max-w-28 truncate text-[11px] font-medium leading-tight text-gray-600 dark:text-gray-300">
                     {user.name}
                   </span>
                 </button>

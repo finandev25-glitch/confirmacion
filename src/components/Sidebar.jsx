@@ -24,6 +24,7 @@ import {
   KeyRound,
   FolderCheck,
   UserMinus,
+  Archive,
 } from "lucide-react";
 
 const SidebarContent = ({
@@ -64,6 +65,7 @@ const SidebarContent = ({
     { view: "reportes", icon: PieChart, label: "Reportes" },
     { view: "confirmados", icon: Clock3, label: "Confirmados" },
     { view: "documentos", icon: FileText, label: "Documentos" },
+    { view: "exportar-vouchers", icon: Archive, label: "Exportar Vouchers" },
     { view: "regularizar-depositos", icon: FolderCheck, label: "Regularizar Depósitos" },
     { view: "cambiar-contrasena", icon: KeyRound, label: "Cambiar Contraseña" },
   ];
