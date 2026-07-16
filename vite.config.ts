@@ -1,5 +1,11 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import fs from 'fs';
+
+const rollupInput: Record<string, string> = { main: 'index.html' };
+if (fs.existsSync('extension.html')) {
+  rollupInput.extension = 'extension.html';
+}
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -7,10 +13,7 @@ export default defineConfig({
   base: '/',
   build: {
     rollupOptions: {
-      input: {
-        main: 'index.html',
-        extension: 'extension.html',
-      },
+      input: rollupInput,
     },
   },
   optimizeDeps: {
